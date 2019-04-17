@@ -17,8 +17,11 @@ var SystemConfigPath = "/etc/signalfx.conf"
 var HomeConfigSuffix = "/.signalfx.conf"
 var HomeConfigPath = ""
 
+const defaultAPIURL = "https://api.signalfx.com"
+
 type signalformConfig struct {
 	AuthToken string `json:"auth_token"`
+	APIURL    string `json:"api_url"`
 }
 
 func Provider() terraform.ResourceProvider {
@@ -28,6 +31,12 @@ func Provider() terraform.ResourceProvider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("SFX_AUTH_TOKEN", ""),
+				Description: "SignalFx auth token",
+			},
+			"api_url": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("SFX_API_URL", defaultAPIURL),
 				Description: "SignalFx auth token",
 			},
 		},
@@ -85,6 +94,15 @@ func signalformConfigure(data *schema.ResourceData) (interface{}, error) {
 
 	if config.AuthToken == "" {
 		return &config, fmt.Errorf("auth_token: required field is not set")
+	}
+
+	if url, ok := data.GetOk("api_url"); ok {
+		config.APIURL = url.(string)
+	}
+
+	if config.APIURL == "" {
+		// this should never happen since we set a default
+		return &config, fmt.Errorf("api_url: required field is not set")
 	}
 
 	return &config, nil

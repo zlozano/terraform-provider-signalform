@@ -231,13 +231,15 @@ func singlevaluechartCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Failed creating json payload: %s", err.Error())
 	}
+	url := fmt.Sprintf(CHART_API_URL, config.APIURL)
 
-	return resourceCreate(CHART_API_URL, config.AuthToken, payload, d)
+	return resourceCreate(url, config.AuthToken, payload, d)
 }
 
 func singlevaluechartRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*signalformConfig)
 	url := fmt.Sprintf("%s/%s", CHART_API_URL, d.Id())
+	url = fmt.Sprintf(url, config.APIURL)
 
 	return resourceRead(url, config.AuthToken, d)
 }
@@ -249,6 +251,7 @@ func singlevaluechartUpdate(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Failed creating json payload: %s", err.Error())
 	}
 	url := fmt.Sprintf("%s/%s", CHART_API_URL, d.Id())
+	url = fmt.Sprintf(url, config.APIURL)
 
 	return resourceUpdate(url, config.AuthToken, payload, d)
 }
@@ -256,5 +259,7 @@ func singlevaluechartUpdate(d *schema.ResourceData, meta interface{}) error {
 func singlevaluechartDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*signalformConfig)
 	url := fmt.Sprintf("%s/%s", CHART_API_URL, d.Id())
+	url = fmt.Sprintf(url, config.APIURL)
+
 	return resourceDelete(url, config.AuthToken, d)
 }

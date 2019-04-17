@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	DETECTOR_API_URL = "https://api.signalfx.com/v2/detector"
+	DETECTOR_API_URL = "%s/v2/detector"
 	DETECTOR_URL     = "https://app.signalfx.com/#/detector/v2/<id>/edit"
 )
 
@@ -303,13 +303,15 @@ func detectorCreate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Failed creating json payload: %s", err.Error())
 	}
+	url := fmt.Sprintf(DETECTOR_API_URL, config.APIURL)
 
-	return resourceCreate(DETECTOR_API_URL, config.AuthToken, payload, d)
+	return resourceCreate(url, config.AuthToken, payload, d)
 }
 
 func detectorRead(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*signalformConfig)
 	url := fmt.Sprintf("%s/%s", DETECTOR_API_URL, d.Id())
+	url = fmt.Sprintf(url, config.APIURL)
 
 	return resourceRead(url, config.AuthToken, d)
 }
@@ -321,6 +323,7 @@ func detectorUpdate(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Failed creating json payload: %s", err.Error())
 	}
 	url := fmt.Sprintf("%s/%s", DETECTOR_API_URL, d.Id())
+	url = fmt.Sprintf(url, config.APIURL)
 
 	return resourceUpdate(url, config.AuthToken, payload, d)
 }
@@ -328,6 +331,7 @@ func detectorUpdate(d *schema.ResourceData, meta interface{}) error {
 func detectorDelete(d *schema.ResourceData, meta interface{}) error {
 	config := meta.(*signalformConfig)
 	url := fmt.Sprintf("%s/%s", DETECTOR_API_URL, d.Id())
+	url = fmt.Sprintf(url, config.APIURL)
 
 	return resourceDelete(url, config.AuthToken, d)
 }
